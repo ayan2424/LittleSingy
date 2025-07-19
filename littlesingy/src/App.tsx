@@ -9,6 +9,7 @@ import Setting from './pages/Setting';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('Home');
+  const [search, setSearch] = useState('');
 
   let PageComponent;
   switch (currentPage) {
@@ -28,9 +29,9 @@ function App() {
 
   return (
     <div className="App">
-      <TopBar />
+      <TopBar onSearchChange={setSearch} />
       <div style={{ marginTop: 60, marginBottom: 70 }}>
-        <PageComponent />
+        <PageComponent search={search} />
       </div>
       <BottomNav current={currentPage} onChange={setCurrentPage} />
     </div>
