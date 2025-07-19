@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import YouTube from 'react-youtube';
 
 const FAV_KEY = 'litttleSingyFavourites';
+const CHANNEL_ID = 'UCCTZzD9FrSGepKYiA2UNh1w';
 
 interface HomeProps {
   search?: string;
@@ -10,12 +11,11 @@ interface HomeProps {
 interface Video {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   thumbnail: string;
 }
 
 const API_KEY = process.env.REACT_APP_YOUTUBE_API_KEY;
-const DEFAULT_QUERY = 'nursery rhymes';
 
 const Home: React.FC<HomeProps> = ({ search }) => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -34,10 +34,11 @@ const Home: React.FC<HomeProps> = ({ search }) => {
       setLoading(true);
       setError(null);
       try {
-        const q = search && search.trim() ? search : DEFAULT_QUERY;
-        const resp = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q=${encodeURIComponent(q)}&key=${API_KEY}`
-        );
+        let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&channelId=${CHANNEL_ID}&key=${API_KEY}`;
+        if (search && search.trim()) {
+          url += `&q=${encodeURIComponent(search)}`;
+        }
+        const resp = await fetch(url);
         if (!resp.ok) throw new Error('Failed to fetch videos');
         const data = await resp.json();
         setVideos(
@@ -65,7 +66,7 @@ const Home: React.FC<HomeProps> = ({ search }) => {
     if (isFavourite(video.id)) {
       updated = favourites.filter((v) => v.id !== video.id);
     } else {
-      updated = [...favourites, { id: video.id, title: video.title, thumbnail: video.thumbnail }];
+      updated = [...favourites, { id: video.id, title: video.title, thumbnail: video.thumbnail, description: video.description }];
     }
     setFavourites(updated);
     localStorage.setItem(FAV_KEY, JSON.stringify(updated));

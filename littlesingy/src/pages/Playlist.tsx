@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import YouTube from 'react-youtube';
 
 const API_KEY = process.env.REACT_APP_YOUTUBE_API_KEY;
-const DEFAULT_QUERY = 'nursery rhymes';
+const CHANNEL_ID = 'UCCTZzD9FrSGepKYiA2UNh1w';
 
 interface PlaylistProps {
   search?: string;
@@ -25,20 +25,24 @@ const Playlist: React.FC<PlaylistProps> = ({ search }) => {
       setLoading(true);
       setError(null);
       try {
-        const q = search && search.trim() ? search : DEFAULT_QUERY;
-        const resp = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&type=playlist&maxResults=8&q=${encodeURIComponent(q)}&key=${API_KEY}`
-        );
+        let url = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=8&channelId=${CHANNEL_ID}&key=${API_KEY}`;
+        if (search && search.trim()) {
+          // Playlists API does not support search, so filter client-side
+          // We'll filter after fetching
+        }
+        const resp = await fetch(url);
         if (!resp.ok) throw new Error('Failed to fetch playlists');
         const data = await resp.json();
-        setPlaylists(
-          data.items.map((item: any) => ({
-            id: item.id.playlistId,
-            title: item.snippet.title,
-            thumbnail: item.snippet.thumbnails.medium.url,
-          }))
-        );
-        setSelectedPlaylist(data.items[0]?.id.playlistId || null);
+        let items = data.items.map((item: any) => ({
+          id: item.id,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails.medium.url,
+        }));
+        if (search && search.trim()) {
+          items = items.filter((item: PlaylistItem) => item.title.toLowerCase().includes(search.toLowerCase()));
+        }
+        setPlaylists(items);
+        setSelectedPlaylist(items[0]?.id || null);
       } catch (e: any) {
         setError(e.message || 'Unknown error');
       } finally {
