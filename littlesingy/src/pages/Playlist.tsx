@@ -28,7 +28,6 @@ const Playlist: React.FC<PlaylistProps> = ({ search }) => {
         let url = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=8&channelId=${CHANNEL_ID}&key=${API_KEY}`;
         if (search && search.trim()) {
           // Playlists API does not support search, so filter client-side
-          // We'll filter after fetching
         }
         const resp = await fetch(url);
         if (!resp.ok) throw new Error('Failed to fetch playlists');
@@ -75,29 +74,38 @@ const Playlist: React.FC<PlaylistProps> = ({ search }) => {
       )}
       <div style={{ marginTop: '2rem' }}>
         <h3>Playlists</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.5rem',
+        }}>
           {playlists.map((playlist) => (
             <div
               key={playlist.id}
               style={{
-                display: 'flex',
-                alignItems: 'flex-start',
                 background: '#fff',
-                borderRadius: 8,
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                borderRadius: 12,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 cursor: 'pointer',
-                padding: 8,
+                overflow: 'hidden',
                 border: selectedPlaylist === playlist.id ? '2px solid #ff4081' : '2px solid transparent',
+                transition: 'box-shadow 0.2s, border 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 220,
+                position: 'relative',
               }}
               onClick={() => setSelectedPlaylist(playlist.id)}
             >
-              <img
-                src={playlist.thumbnail}
-                alt={playlist.title}
-                style={{ width: 120, height: 90, objectFit: 'cover', borderRadius: 6, marginRight: 12 }}
-              />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, fontSize: 16 }}>{playlist.title}</div>
+              <div style={{ position: 'relative' }}>
+                <img
+                  src={playlist.thumbnail}
+                  alt={playlist.title}
+                  style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
+                />
+              </div>
+              <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 6, lineHeight: 1.2 }}>{playlist.title}</div>
               </div>
             </div>
           ))}

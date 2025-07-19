@@ -85,38 +85,62 @@ const Home: React.FC<HomeProps> = ({ search }) => {
       )}
       <div style={{ marginTop: '2rem' }}>
         <h3>Popular Rhymes</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.5rem',
+        }}>
           {videos.map((video) => (
             <div
               key={video.id}
               style={{
-                display: 'flex',
-                alignItems: 'flex-start',
                 background: '#fff',
-                borderRadius: 8,
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                borderRadius: 12,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 cursor: 'pointer',
-                padding: 8,
+                overflow: 'hidden',
                 border: selectedVideo === video.id ? '2px solid #ff4081' : '2px solid transparent',
+                transition: 'box-shadow 0.2s, border 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 240,
+                position: 'relative',
               }}
               onClick={() => setSelectedVideo(video.id)}
             >
-              <img
-                src={video.thumbnail}
-                alt={video.title}
-                style={{ width: 120, height: 90, objectFit: 'cover', borderRadius: 6, marginRight: 12 }}
-              />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, fontSize: 16 }}>{video.title}</div>
-                <div style={{ fontSize: 13, color: '#666', marginTop: 4, maxHeight: 40, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ position: 'relative' }}>
+                <img
+                  src={video.thumbnail}
+                  alt={video.title}
+                  style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
+                />
+                <button
+                  style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    background: isFavourite(video.id) ? '#ff4081' : 'rgba(255,255,255,0.85)',
+                    color: isFavourite(video.id) ? '#fff' : '#ff4081',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 36,
+                    height: 36,
+                    fontSize: 20,
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.10)',
+                    zIndex: 2,
+                  }}
+                  onClick={e => { e.stopPropagation(); toggleFavourite(video); }}
+                  title={isFavourite(video.id) ? 'Remove from Favourites' : 'Add to Favourites'}
+                >
+                  {isFavourite(video.id) ? '♥' : '♡'}
+                </button>
+              </div>
+              <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 6, lineHeight: 1.2 }}>{video.title}</div>
+                <div style={{ fontSize: 13, color: '#666', maxHeight: 36, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {video.description}
                 </div>
-                <button
-                  style={{ marginTop: 8, color: isFavourite(video.id) ? '#ff4081' : '#888', background: 'none', border: 'none', cursor: 'pointer' }}
-                  onClick={e => { e.stopPropagation(); toggleFavourite(video); }}
-                >
-                  {isFavourite(video.id) ? 'Remove from Favourites' : 'Add to Favourites'}
-                </button>
               </div>
             </div>
           ))}
