@@ -13,7 +13,12 @@ LitttleSingy is a nursery rhymes TV app that showcases YouTube videos and playli
    ```bash
    npm install
    ```
-2. Start the development server:
+2. Copy `.env.example` to `.env` and add your YouTube Data API key:
+   ```bash
+   cp .env.example .env
+   # Edit .env and set REACT_APP_YOUTUBE_API_KEY=your_key_here
+   ```
+3. Start the development server:
    ```bash
    npm start
    ```
